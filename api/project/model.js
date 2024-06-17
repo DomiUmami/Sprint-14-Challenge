@@ -2,11 +2,11 @@
 const db = require('../../data/dbConfig');
 
 function add(project) {
-  return db('projects').insert(project).returning('*').then(rows => rows[0]);
+  return db('project').insert(project).returning('*').then(rows => rows[0]);
 }
 
 function getAll() {
-  return db('projects');
+  return db('project');
 }
 
 module.exports = {

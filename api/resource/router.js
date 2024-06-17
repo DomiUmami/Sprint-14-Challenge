@@ -1,24 +1,29 @@
 // build your `/api/resources` router here
 const express = require('express');
-const Resources = require('./model');
 const router = express.Router();
+const db = require('../../data/dbConfig');
 
-router.post('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
   try {
-    const resource = await Resources.add(req.body);
-    res.status(201).json(resource);
+    const resources = await db('resources');
+    res.status(200).json(resources);
   } catch (err) {
-    next(err);
+    res.status(500).json({ message: 'Failed to get resources' });
   }
 });
 
-router.get('/', async (req, res, next) => {
+router.post('/', async (req, res) => {
   try {
-    const resources = await Resources.getAll();
-    res.json(resources);
+    const { resource_name, resource_description } = req.body;
+    if (!resource_name) {
+      return res.status(400).json({ message: 'Resource name is required' });
+    }
+    const [newResource] = await db('resources').insert({ resource_name, resource_description }, ['resource_id', 'resource_name', 'resource_description']);
+    res.status(201).json(newResource);
   } catch (err) {
-    next(err);
+    res.status(500).json({ message: 'Failed to create resource' });
   }
 });
 
 module.exports = router;
+
